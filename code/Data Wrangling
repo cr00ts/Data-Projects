@@ -1,0 +1,67 @@
+import pandas as pd
+import matplotlib.pylab as plt
+import numpy as np
+
+
+filename = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-DA0101EN-SkillsNetwork/labs/Data%20files/auto.csv" #Assigning  URL of dataset to filename variable
+
+headers = ["symboling","normalized-losses","make","fuel-type","aspiration", "num-of-doors","body-style",  #created list of headers containing name of headers
+         "drive-wheels","engine-location","wheel-base", "length","width","height","curb-weight","engine-type",
+         "num-of-cylinders", "engine-size","fuel-system","bore","stroke","compression-ratio","horsepower",
+         "peak-rpm","city-mpg","highway-mpg","price"]
+
+df = pd.read_csv(filename, names = headers) #Used read_csv method to load data from web address
+
+df.replace("?", np.nan, inplace = True) #replaced missing values with NaN (not a number)
+
+missing_data = df.isnull() #outputting boolean vlaues to indicate what specific data is missing (true represents missing data, false means that it is present in the dataset)
+print(missing_data.head(5)) 
+
+for column in missing_data.columns.values.tolist(): #for loop in order to determine how many missing values there are in each column 
+    print(column)
+    print(missing_data[column].value_counts())
+    print("")
+
+avg_norm_loss = df["normalized-losses"].astype("float").mean(axis=0) #Calculating the mean vaule for "normalized_losses" column
+print("Average of normalized-losses:", avg_norm_loss)
+
+df["normalized-losses"].replace(np.nan, avg_norm_loss, inplace=True) #replacing NaN with mean value 
+
+avg_bore=df['bore'].astype('float').mean(axis=0) #Calculating the mean vaule for "Bore" column 
+print("Average of bore:", avg_bore)
+
+df["bore"].replace(np.nan, avg_bore, inplace=True) #replacing NaN with mean value
+
+avg_stroke_loss = df["stroke"].astype("float").mean(axis=0) #Calculating the mean vaule for "stroke" column
+print("Average of stroke:",avg_stroke_loss)
+
+df["stroke"].replace(np.nan, avg_stroke_loss, inplace=True) #replace NaN by mean value in "stroke" column
+
+avg_horsepower = df['horsepower'].astype('float').mean(axis=0) #Calculating the mean vaule for "Horsepower" column
+print("Average horsepower:", avg_horsepower)
+
+df['horsepower'].replace(np.nan, avg_horsepower, inplace=True) #replace NaN by mean value in "Horsepower" column
+
+avg_peakrpm=df['peak-rpm'].astype('float').mean(axis=0) #Calculating the mean vaule for "RPM" column
+print("Average peak rpm:", avg_peakrpm)
+
+df['peak-rpm'].replace(np.nan, avg_peakrpm, inplace=True) #replace NaN by mean value in "RPM" column
+
+df['num-of-doors'].value_counts() #Using value counts to see how many values are in a specific column
+
+df['num-of-doors'].value_counts().idxmax() #Using .idmax() to calculate the most common type
+
+df["num-of-doors"].replace(np.nan, "four", inplace=True) #Replacing NaN with four
+
+df.dropna(subset=["price"], axis=0, inplace=True) #dropping row with NaN in "price" column
+
+df.reset_index(drop=True, inplace=True) #resetting index after dropping rows
+
+df.head(5)
+
+print(df.dtypes) #used to check if the data was all in the correct format
+
+df[["bore", "stroke"]] = df[["bore", "stroke"]].astype("float")
+df[["normalized-losses"]] = df[["normalized-losses"]].astype("int")
+df[["price"]] = df[["price"]].astype("float")
+df[["peak-rpm"]] = df[["peak-rpm"]].astype("float")
